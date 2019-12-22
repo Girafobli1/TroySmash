@@ -1,8 +1,6 @@
 package Game;
 
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.SlickException;
+import org.newdawn.slick.*;
 import org.newdawn.slick.state.StateBasedGame;
 
 
@@ -31,8 +29,9 @@ public class Game extends StateBasedGame {
     }
 
     public static void main(String[] args) throws SlickException {
-        AppGameContainer app = new AppGameContainer(new Game("Troy Smash 1.4"));
+        AppGameContainer app = new AppGameContainer(new Game("Troy Smash 1.7"));
         app.setDisplayMode(1000, 800, false);
+        app.setTargetFrameRate(60);
         app.start();
     }
 

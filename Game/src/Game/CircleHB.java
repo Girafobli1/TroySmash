@@ -6,8 +6,10 @@
 
 package Game;
 
+import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
 
+import java.awt.Rectangle;
 
 public class CircleHB extends HitBox
 {

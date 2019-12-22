@@ -1,10 +1,14 @@
 package Game;
+
+import Game.Conf;
 import java.awt.Font;
 import org.newdawn.slick.TrueTypeFont;
 import java.util.regex.*;
 
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -22,10 +26,9 @@ public class Smash extends BasicGameState {
     private int state;
     //Final D map
     private Image FD;
-    //k1 starting stance
+    //kims[0] starting stance
     private Image idle;
     //mr kim test
-    private KimBoi k1;
     private boolean m;
     private Pattern xCheck;
     private Pattern yCheck;
@@ -88,19 +91,18 @@ public class Smash extends BasicGameState {
 
         font = new Font("Showcard Gothic", Font.BOLD, 50);
         ttf = new TrueTypeFont(font, true);
+
+        getID();
     }
 
     @Override
     public void render(GameContainer gc, StateBasedGame sbg, Graphics grphcs) throws SlickException {
         FD.draw(0, 0, .5f);
-        k1.draw();
         try {
             for (int i = 0; i < kims.length; i++) {
-                if (i > 0) {
-                    break;
-                }
                 if (kims.length <= 1) {
                     kims[i].draw();
+                    System.out.println("a");
                 }
             }
         } catch (NullPointerException x) {
@@ -117,13 +119,13 @@ public class Smash extends BasicGameState {
     @Override
     public synchronized void update(GameContainer gc, StateBasedGame sbg, int i) throws SlickException {
         if (!CorS) {
-            if(Server2.numLives < 1) {
+            if (Server2.numLives < 1) {
                 sbg.enterState(4);
             }
         }
         System.out.println(numPlayers);
         if (gen) {
-            init2();
+        init2();
         }
         if (!music.playing()) {
             music.play(1, Server2.getVolume());
@@ -134,311 +136,340 @@ public class Smash extends BasicGameState {
             try {
                 if (CorS) {
                     if (input.isKeyPressed(controls[LEFT])) {
-                        k1.changeLeft();
                         left = true;
                         Client.send("turn left ", Client.id);
-                        //k1.idle();
+                        //kims[0].idle();
                     }
                     if (input.isKeyPressed(controls[RIGHT])) {
-                        k1.changeRight();
                         left = false;
                         Client.send("turn right ", Client.id);
-                        //k1.idle();
+                        //kims[0].idle();
                     }
                     if (input.isKeyPressed(Input.KEY_T)) {
-                        k1.changeAttack();
                         sound.play(1, 0.3f);
                         m = false;
                         Client.send("attack ", Client.id);
                         //System.out.println(m);
                         if (left) {
-                            HitBox h = new CircleHB((int) k1.getX() + 60, (int) k1.getY() + 50, 135, 110);
-                            if (k1.detectHit(h, kims[0])) {
+                            HitBox h = new CircleHB((int) kims[0].getX() + 60, (int) kims[0].getY() + 50, 135, 110);
+                            if (kims[0].detectHit(h, kims[1])) {
                                 Client.send("hit left", Client.id);
-                                kims[0].changeLeft();
-                                kims[0].walk(-25);
+                                kims[1].changeLeft();
+                                kims[1].walk(-25);
                             }
                         } else {
-                            HitBox h = new CircleHB((int) k1.getX() + 120, (int) k1.getY() + 50, 135, 110);
-                            if (k1.detectHit(h, kims[0])) {
+                            HitBox h = new CircleHB((int) kims[0].getX() + 120, (int) kims[0].getY() + 50, 135, 110);
+                            if (kims[0].detectHit(h, kims[1])) {
                                 Client.send("hit right", Client.id);
-                                kims[0].changeRight();
-                                kims[0].walk(25);
+                                kims[1].changeRight();
+                                kims[1].walk(25);
                             }
                         }
                     }
                     if (input.isKeyPressed(Input.KEY_V)) {
-                        k1.changeUpAttack();
-
+                        kims[0].changeUpAttack();
                         sound.play(1, 0.3f);
                         m = false;
                     }
 
                     if (input.isKeyPressed(Input.KEY_Y)) {
-                        k1.changeSideAttack();
+                        kims[0].changeSideAttack();
                         Client.send("side special ", Client.id);
                         if (left) {
-                            HitBox h = new RectHB((int) k1.getX(), (int) k1.getY() + 110, 100, 15);
-                            if (k1.detectHit(h, kims[0])) {
+                            HitBox h = new RectHB((int) kims[0].getX(), (int) kims[0].getY() + 110, 100, 15);
+                            if (kims[0].detectHit(h, kims[1])) {
                                 Client.send("hit left", Client.id);
-                                kims[0].changeLeft();
-                                kims[0].walk(-25);
+                                kims[1].changeLeft();
+                                kims[1].walk(-25);
                             }
                         } else {
-                            HitBox h = new RectHB((int) k1.getX() + 190, (int) k1.getY() + 110, 100, 15);
-                            if (k1.detectHit(h, kims[0])) {
+                            HitBox h = new RectHB((int) kims[0].getX() + 190, (int) kims[0].getY() + 110, 100, 15);
+                            if (kims[0].detectHit(h, kims[1])) {
                                 Client.send("hit right", Client.id);
-                                kims[0].changeRight();
-                                kims[0].walk(25);
+                                kims[1].changeRight();
+                                kims[1].walk(25);
                             }
                         }
                         sound.play(1, 0.3f);
                         m = false;
                     }
                     if (input.isKeyPressed(Input.KEY_I)) {
-                        k1.changeUpSpecial();
+                        kims[0].changeUpSpecial();
                         m = false;
                     }
                     if (input.isKeyPressed(Input.KEY_U)) {
-                        k1.changeUlt();
+                        kims[0].changeUlt();
                         Client.send("ult ", Client.id);
                         m = false;
                     }
                     if (input.isKeyPressed(controls[UP]) && !jumping) { //!jumping is so you can't jump mid jump
                         Client.send("jump ", Client.id);
-                        jumping = true;
-                        try {
-                            initY = k1.getY(); //sets the initial y of Kim (this is only temporary)
-                            k1.changeJump();
-                            jump2(gc, k1); //using the updated "jump2" method
-                        } catch (InterruptedException ex) {
-                        }
-                        m = false;
+                        /*
+                         * jumping = true; try { initY = kims[0].getY(); //sets
+                         * the initial y of Kim (this is only temporary)
+                         * kims[0].changeJump(); jump2(gc, kims[0]); //using the
+                         * updated "jump2" method } catch (InterruptedException
+                         * ex) { } m = false;
+                         */
                     }
 
                     if (input.isKeyDown(controls[LEFT])) {
-                        k1.walk(-2);
-                        Client.send("left " + "x:" + k1.getX() + "y:"+k1.getY(), Client.id);
+                        //kims[0].walk(-14);
+                        Client.send("left " /*
+                                 * + "x:" + kims[0].getX() + "y:" + kims[0].getY()
+                                 */, Client.id);
                         m = true;
                     } else if (input.isKeyDown(controls[RIGHT])) {
-                        k1.walk(2);
-                        Client.send("right " + "x:" + k1.getX() + "y:"+k1.getY(), Client.id);
+                        //kims[0].walk(14);
+                        Client.send("right " /*
+                                 * + "x:" + kims[0].getX() + "y:" + kims[0].getY()
+                                 */, Client.id);
                         m = true;
                     } else if (m) {
-                        k1.idle();
+                        kims[0].idle();
                     }
                     if (!(input.isKeyDown(controls[LEFT]) || input.isKeyDown(controls[RIGHT]) || input.isKeyDown(Input.KEY_T) || input.isKeyDown(Input.KEY_V) || input.isKeyDown(Input.KEY_Y) || input.isKeyDown(Input.KEY_I) || input.isKeyDown(Input.KEY_U) || input.isKeyDown(controls[UP]))) {
                         Client.send("stop ", Client.id);
-                        k1.idle();
+                        //kims[0].idle();
                     }
 
                     if (Client.recievedData.contains("jump")) {
-                        jumpings[0] = true;
-                        try {
-                            initY = kims[0].getY(); //sets the initial y of Kim (this is only temporary)
-                            kims[0].changeJump();
-                            jump2(gc, kims[0]); //using the updated "jump2" method
-                            //kims[0].setX();
-                            //kims[0].setY();
-                        } catch (InterruptedException ex) {
+                        if (Client.recievedData.contains("1")) {
+                            jumpings[0] = true;
+                            try {
+                                initY = kims[1].getY(); //sets the initial y of Kim (this is only temporary)
+                                kims[1].changeJump();
+                                jump2(gc, kims[1]); //using the updated "jump2" method
+                                //kims[1].setX();
+                                //kims[1].setY();
+                            } catch (InterruptedException ex) {
+                            }
+                        } else {
+                            jumping = true;
+                            try {
+                                initY = kims[0].getY(); //sets the initial y of Kim (this is only temporary)
+                                kims[0].changeJump();
+                                jump2(gc, kims[0]); //using the updated"jump2" method 
+                            } catch (InterruptedException ex) {
+                            }
+                            m = false;
                         }
                     }
                     if (Client.recievedData.contains("turn left")) {
-                        kims[0].changeLeft();
+                        kims[1].changeLeft();
+                    } else if (Client.recievedData.contains("hit left")) {
+                        kims[0].walk(-25);
+                    } else if (Client.recievedData.contains("left")) {
+                        if (Client.recievedData.contains("1")) {
+                            kims[1].walk(-14);
+                        } else {
+                            kims[0].walk(-14);
+                        }
                     }
                     if (Client.recievedData.contains("turn right")) {
-                        kims[0].changeRight();
-                    }
-                    if (Client.recievedData.contains("left")) {
-
-                        kims[0].walk(2f);
-
-                    }
-
-                    if (Client.recievedData.contains("hit left")) {
-                        k1.walk(-25);
-                    }
-
-                    if (Client.recievedData.contains("hit right")) {
-                        k1.walk(25);
-                    }
-                    if (Client.recievedData.contains("right")) {
-
-                        kims[0].walk(2f);
-
+                        kims[1].changeRight();
+                    } else if (Client.recievedData.contains("hit right")) {
+                        kims[0].walk(25);
+                    } else if (Client.recievedData.contains("right")) {
+                        if (Client.recievedData.contains("1")) {
+                            kims[1].walk(14);
+                        } else {
+                            kims[0].walk(14);
+                        }
                     }
 
                     if (Client.recievedData.contains("attack")) {
-                        kims[0].changeAttack();
+                        kims[1].changeAttack();
                         sound.play(1, 0.3f);
                     }
                     if (Client.recievedData.contains("side special")) {
-                        kims[0].changeSideAttack();
+                        kims[1].changeSideAttack();
                         sound.play(1, 0.3f);
                     }
                     if (Client.recievedData.contains("ult")) {
-                        kims[0].changeUlt();
+                        kims[1].changeUlt();
                     }
                     if (Client.recievedData.contains("stop")) {
-                        kims[0].idle();
+                        kims[1].idle();
                     }
                 } else {
                     if (input.isKeyPressed(controls[LEFT])) {
-                        k1.changeLeft();
+                        //    kims[0].changeLeft();
                         Server2.send("turn left ", 1);
-                        //k1.idle();
+                        //kims[0].idle();
                     }
                     if (input.isKeyPressed(controls[RIGHT])) {
-                        k1.changeRight();
+                        //    kims[0].changeRight();
                         Server2.send("turn right ", 1);
-                        //k1.idle();
+                        //kims[0].idle();
                     }
                     if (input.isKeyPressed(Input.KEY_T)) {
-                        k1.changeAttack();
+                        kims[0].changeAttack();
                         Server2.send("attack ", 1);
                         if (left) {
-                            HitBox h = new CircleHB((int) k1.getX() + 60, (int) k1.getY() + 50, 135, 110);
-                            if (k1.detectHit(h, kims[0])) {
+                            HitBox h = new CircleHB((int) kims[0].getX() + 60, (int) kims[0].getY() + 50, 135, 110);
+                            if (kims[0].detectHit(h, kims[1])) {
                                 Server2.send("hit left", Client.id);
-                                kims[0].changeLeft();
-                                kims[0].walk(-55);
+                                kims[1].changeLeft();
+                                kims[1].walk(-55);
                             }
                         } else {
-                            HitBox h = new CircleHB((int) k1.getX() + 120, (int) k1.getY() + 50, 135, 110);
-                            if (k1.detectHit(h, kims[0])) {
+                            HitBox h = new CircleHB((int) kims[0].getX() + 120, (int) kims[0].getY() + 50, 135, 110);
+                            if (kims[0].detectHit(h, kims[1])) {
                                 Server2.send("hit right", Client.id);
-                                kims[0].changeRight();
-                                kims[0].walk(55);
+                                kims[1].changeRight();
+                                kims[1].walk(55);
                             }
                         }
                         sound.play(1, 0.3f);
                         m = false;
                         //System.out.println(m);
 
-                        //k1.draw();
+                        //kims[0].draw();
                     }
                     if (input.isKeyPressed(Input.KEY_V)) {
-                        k1.changeUpAttack();
+                        kims[0].changeUpAttack();
                         sound.play(1, 0.3f);
                         m = false;
                     }
 
                     if (input.isKeyPressed(Input.KEY_Y)) {
-                        k1.changeSideAttack();
+                        kims[0].changeSideAttack();
                         Server2.send("side special ", 1);
                         if (left) {
-                            HitBox h = new RectHB((int) k1.getX(), (int) k1.getY() + 110, 100, 15);
-                            if (k1.detectHit(h, kims[0])) {
+                            HitBox h = new RectHB((int) kims[0].getX(), (int) kims[0].getY() + 110, 100, 15);
+                            if (kims[0].detectHit(h, kims[1])) {
                                 Server2.send("hit left", Client.id);
-                                kims[0].changeLeft();
-                                kims[0].walk(-25);
+                                kims[1].changeLeft();
+                                kims[1].walk(-25);
                             }
                         } else {
-                            HitBox h = new RectHB((int) k1.getX() + 190, (int) k1.getY() + 110, 100, 15);
-                            if (k1.detectHit(h, kims[0])) {
+                            HitBox h = new RectHB((int) kims[0].getX() + 190, (int) kims[0].getY() + 110, 100, 15);
+                            if (kims[0].detectHit(h, kims[1])) {
                                 Server2.send("hit right", Client.id);
-                                kims[0].changeRight();
-                                kims[0].walk(25);
+                                kims[1].changeRight();
+                                kims[1].walk(25);
                             }
                         }
                         sound.play(1, 0.3f);
                         m = false;
                     }
                     if (input.isKeyPressed(Input.KEY_I)) {
-                        k1.changeUpSpecial();
+                        kims[0].changeUpSpecial();
                         m = false;
                     }
                     if (input.isKeyPressed(Input.KEY_U)) {
-                        k1.changeUlt();
+                        kims[0].changeUlt();
                         Server2.send("ult ", 1);
                         m = false;
                     }
                     if (input.isKeyPressed(controls[UP]) && !jumping) { //!jumping is so you can't jump mid jump
                         Server2.send("jump ", 1);
-                        jumping = true;
-                        try {
-                            initY = k1.getY(); //sets the initial y of Kim (this is only temporary)
-                            k1.changeJump();
-                            jump2(gc, k1); //using the updated "jump2" method
-                        } catch (InterruptedException ex) {
-                        }
-                        m = false;
+                        /*
+                         * jumping = true; try { initY = kims[0].getY(); //sets
+                         * the initial y of Kim (this is only temporary)
+                         * kims[0].changeJump(); jump2(gc, kims[0]); //using the
+                         * updated "jump2" method } catch (InterruptedException
+                         * ex) { } m = false;
+                         */
                     }
 
                     if (input.isKeyDown(controls[LEFT])) {
-                        k1.walk(-2);
-                        Server2.send("left " + k1.getX(), 1);
+                        //kims[0].walk(-14);
+                        Server2.send("left " /*
+                                 * + kims[0].getX()
+                                 */, 1);
                         m = true;
                     } else if (input.isKeyDown(controls[RIGHT])) {
-                        k1.walk(2);
-                        Server2.send("right " + k1.getX(), 1);
+                        //kims[0].walk(14);
+                        Server2.send("right "/*
+                                 * + kims[0].getX()
+                                 */, 1);
                         m = true;
                     } else if (m) {
-                        System.out.println(m);
-                        k1.idle();
+                        //System.out.println(m);
+                        kims[0].idle();
                     }
                     if (!(input.isKeyDown(controls[LEFT]) || input.isKeyDown(controls[RIGHT]) || input.isKeyDown(Input.KEY_T) || input.isKeyDown(Input.KEY_V) || input.isKeyDown(Input.KEY_Y) || input.isKeyDown(Input.KEY_S) || input.isKeyDown(Input.KEY_U) || input.isKeyDown(controls[UP]))) {
                         Server2.send("stop", 1);
-                        k1.idle();
+                        //kims[0].idle();
                     }
 
                     if (Server2.recievedData.contains("turn left ")) {
-                        kims[0].changeLeft();
+                        if (!Server2.recievedData.contains("1")) {
+                            kims[1].changeLeft();
+                        } else {
+                            kims[0].changeLeft();
+                        }
+                    } else if (Server2.recievedData.contains("hit left")) {
+                        kims[0].walk(-25);
+                    } else if (Server2.recievedData.contains("left ")) {
+                        if (!Server2.recievedData.contains("1")) {
+                            kims[1].walk(-14);
+                        } else {
+                            kims[0].walk(-14);
+                        }
                     }
                     if (Server2.recievedData.contains("turn right ")) {
-                        kims[0].changeRight();
+                        if (!Server2.recievedData.contains("1")) {
+                            kims[1].changeRight();
+                        } else {
+                            kims[0].changeRight();
+                        }
+                    } else if (Server2.recievedData.contains("hit right")) {
+                        kims[0].walk(25);
+                    } else if (Server2.recievedData.contains("right ")) {
+                        if (!Server2.recievedData.contains("1")) {
+                            kims[1].walk(14);
+                        } else {
+                            kims[0].walk(14);
+                        }
                     }
-                    if (Server2.recievedData.contains("left ")) {
-
-                        kims[0].walk(-2f);
-
+                    if (Server2.recievedData.contains("jump ")) {
+                        if (!Server2.recievedData.contains("1")) {
+                            jumpings[0] = true;
+                            try {
+                                initY = kims[1].getY(); //sets the initial y of Kim (this is only temporary)
+                                kims[1].changeJump();
+                                jump2(gc, kims[1]); //using the updated "jump2" method
+                            } catch (InterruptedException ex) {
+                            }
+                        } else {
+                            jumping = true;
+                            try {
+                                initY = kims[0].getY(); //sets theinitial y of Kim (this is only temporary)
+                                kims[0].changeJump();
+                                jump2(gc, kims[0]); //using the updated"jump2" method 
+                            } catch (InterruptedException ex) {
+                            }
+                            m = false;
+                        }
                     }
-                }
-                if (Server2.recievedData.contains("hit left")) {
-                    k1.walk(-25);
-                }
-
-                if (Server2.recievedData.contains("hit right")) {
-                    k1.walk(25);
-                }
-                if (Server2.recievedData.contains("right ")) {
-
-                    kims[0].walk(2f);
-
-                }
-                if (Server2.recievedData.contains("jump ")) {
-                    jumpings[0] = true;
-                    try {
-                        initY = kims[0].getY(); //sets the initial y of Kim (this is only temporary)
-                        kims[0].changeJump();
-                        jump2(gc, kims[0]); //using the updated "jump2" method
-                    } catch (InterruptedException ex) {
+                    if (Server2.recievedData.contains("side special ")) {
+                        kims[1].changeSideAttack();
+                        sound.play(1, 0.3f);
                     }
-                }
-                if (Server2.recievedData.contains("side special ")) {
-                    kims[0].changeSideAttack();
-                    sound.play(1, 0.3f);
-                }
-                if (Server2.recievedData.contains("attack ")) {
-                    kims[0].changeAttack();
-                    sound.play(1, 0.3f);
-                }
-                if (Server2.recievedData.contains("ult ")) {
-                    kims[0].changeUlt();
-                }
-                if (Server2.recievedData.contains("stop ")) {
-                    kims[0].idle();
+                    if (Server2.recievedData.contains("attack ")) {
+                        kims[1].changeAttack();
+                        sound.play(1, 0.3f);
+                    }
+                    if (Server2.recievedData.contains("ult ")) {
+                        kims[1].changeUlt();
+                    }
+                    if (Server2.recievedData.contains("stop ")) {
+                        kims[1].idle();
+                    }
                 }
             } catch (IOException e) {
             }
             //x left bound is -300 x right bound is 900
             //
-            //System.out.println("x: " + k1.getX() + " y: " + k1.getY());
+            //System.out.println("x: " + kims[0].getX() + " y: " + kims[0].getY());
             //System.out.println("jumping: " + jumping);
-            //System.out.println("currentY: " + k1.getY());
+            //System.out.println("currentY: " + kims[0].getY());
             //System.out.println("initY: " + initY);
 
-            if (k1.getX() < -24 || k1.getX() > 714 || k1.getY() > 400) { //if off platform fall
+            if ((kims[0].getX() < -24 || kims[0].getX() > 714) && !jumping) { //if off platform fall
                 try {
                     fall(gc);
                 } catch (InterruptedException ex) {
@@ -450,19 +481,19 @@ public class Smash extends BasicGameState {
                     sbg.enterState(4);
                 }
             }
-            System.out.println(k1.getX() + " " + k1.getY());
-            if (k1.getY() > 660 || k1.getX() < -160 || k1.getX() > 950) { //if out of arena play a sound and reset position //TO-DO subtract lives
+            System.out.println(kims[0].getX() + " " + kims[0].getY());
+            if (kims[0].getY() > 660 || kims[0].getX() < -160 || kims[0].getX() > 950) { //if out of arena play a sound and reset position //TO-DO subtract lives
                 dead = true;
-                if (k1.getY() > 660) {
-                    k1.ded(0);
-                } else if (k1.getX() < -160) {
-                    k1.ded(1);
-                } else if (k1.getX() > 950) {
-                    k1.ded(3);
+                if (kims[0].getY() > 660) {
+                    kims[0].ded(0);
+                } else if (kims[0].getX() < -160) {
+                    kims[0].ded(1);
+                } else if (kims[0].getX() > 950) {
+                    kims[0].ded(3);
                 }
                 if (dead) {
-                    k1.setX(60);
-                    k1.setY(345);
+                    kims[0].setX(60);
+                    kims[0].setY(345);
                     if (CorS) {
                         Client.numLives--;
                         try {
@@ -477,6 +508,7 @@ public class Smash extends BasicGameState {
                 death.play();
             }
             if (CorS) {
+                System.out.println("data: " + Client.recievedData);
                 if (Client.numLives < 1) {
                     try {
                         Client.send("dead", Client.id);
@@ -484,18 +516,18 @@ public class Smash extends BasicGameState {
                     }
                 }
                 if (Client.recievedData.contains("dead")) {
-                    kims[0] = new KimBoi(1000000000, 100000000, idle);
+                    kims[1] = new KimBoi(1000000000, 100000000, idle);
                 }
                 if (Client.recievedData.contains("selection")) {
                     sbg.enterState(5);
                 }
                 if (Client.recievedData.contains("life")) {
-                    if (kims[0].getY() > 660) {
-                        kims[0].ded(0);
-                    } else if (kims[0].getX() < -160) {
-                        kims[0].ded(1);
-                    } else if (kims[0].getX() > 950) {
-                        kims[0].ded(2);
+                    if (kims[1].getY() > 660) {
+                        kims[1].ded(0);
+                    } else if (kims[1].getX() < -160) {
+                        kims[1].ded(1);
+                    } else if (kims[1].getX() > 950) {
+                        kims[1].ded(2);
                     }
                 }
             } else {
@@ -510,12 +542,12 @@ public class Smash extends BasicGameState {
                     sbg.enterState(4);
                 }
                 if (Server2.recievedData.contains("life")) {
-                    if (kims[0].getY() > 660) {
-                        kims[0].ded(0);
-                    } else if (kims[0].getX() < -160) {
-                        kims[0].ded(1);
-                    } else if (kims[0].getX() > 950) {
-                        kims[0].ded(2);
+                    if (kims[1].getY() > 660) {
+                        kims[1].ded(0);
+                    } else if (kims[1].getX() < -160) {
+                        kims[1].ded(1);
+                    } else if (kims[1].getX() > 950) {
+                        kims[1].ded(2);
                     }
                 }
             }
@@ -525,44 +557,44 @@ public class Smash extends BasicGameState {
             try {
                 if (CorS && dead == false) {
                     if (input.isKeyPressed(controls[LEFT])) {
-                        k1.changeLeft();
+                        kims[0].changeLeft();
                         left = true;
                         Client.send("turn left ", Client.id);
-                        //k1.idle();
+                        //kims[0].idle();
                     }
                     if (input.isKeyPressed(controls[RIGHT])) {
-                        k1.changeRight();
+                        kims[0].changeRight();
                         left = false;
                         Client.send("turn right ", Client.id);
-                        //k1.idle();
+                        //kims[0].idle();
                     }
                     if (input.isKeyPressed(Input.KEY_T)) {
-                        k1.changeAttack();
+                        kims[0].changeAttack();
                         sound.play(1, 0.3f);
                         m = false;
                         Client.send("attack ", Client.id);
 
                     }
                     if (input.isKeyPressed(Input.KEY_V)) {
-                        k1.changeUpAttack();
+                        kims[0].changeUpAttack();
 
                         sound.play(1, 0.3f);
                         m = false;
                     }
 
                     if (input.isKeyPressed(Input.KEY_Y)) {
-                        k1.changeSideAttack();
+                        kims[0].changeSideAttack();
                         Client.send("side special ", Client.id);
 
                         sound.play(1, 0.3f);
                         m = false;
                     }
                     if (input.isKeyPressed(Input.KEY_S)) {
-                        k1.changeUpSpecial();
+                        kims[0].changeUpSpecial();
                         m = false;
                     }
                     if (input.isKeyPressed(Input.KEY_U)) {
-                        k1.changeUlt();
+                        kims[0].changeUlt();
                         Client.send("ult ", Client.id);
                         m = false;
                     }
@@ -570,121 +602,119 @@ public class Smash extends BasicGameState {
                         Client.send("jump ", Client.id);
                         jumping = true;
                         try {
-                            initY = k1.getY(); //sets the initial y of Kim (this is only temporary)
-                            k1.changeJump();
-                            jump2(gc, k1); //using the updated "jump2" method
+                            initY = kims[0].getY(); //sets the initial y of Kim (this is only temporary)
+                            kims[0].changeJump();
+                            jump2(gc, kims[0]); //using the updated "jump2" method
                         } catch (InterruptedException ex) {
                         }
                         m = false;
                     }
 
                     if (input.isKeyDown(controls[LEFT])) {
-                        k1.walk(-2);
                         Client.send("left ", Client.id);
                         m = true;
                     } else if (input.isKeyDown(controls[RIGHT])) {
-                        k1.walk(2);
                         Client.send("right ", Client.id);
                         m = true;
                     } else if (m) {
-                        k1.idle();
+                        kims[0].idle();
                     }
                     if (!(input.isKeyDown(controls[LEFT]) || input.isKeyDown(controls[RIGHT]) || input.isKeyDown(Input.KEY_T) || input.isKeyDown(Input.KEY_V) || input.isKeyDown(Input.KEY_Y) || input.isKeyDown(Input.KEY_S) || input.isKeyDown(Input.KEY_U) || input.isKeyDown(controls[UP]))) {
                         Client.send("stop ", Client.id);
-                        k1.idle();
+                        // kims[0].idle();
                     }
 
                 } else {
                     if (!dead) {
                         if (input.isKeyPressed(controls[LEFT])) {
-                            k1.changeLeft();
+                            kims[0].changeLeft();
                             Server2.send("turn left ", 1);
-                            //k1.idle();
+                            //kims[0].idle();
                         }
                         if (input.isKeyPressed(controls[RIGHT])) {
-                            k1.changeRight();
+                            kims[0].changeRight();
                             Server2.send("turn right ", 1);
-                            //k1.idle();
+                            //kims[0].idle();
                         }
                         if (input.isKeyPressed(Input.KEY_T)) {
-                            k1.changeAttack();
+                            kims[0].changeAttack();
                             Server2.send("attack ", 1);
                             sound.play(1, 0.3f);
                             m = false;
                             //System.out.println(m);
 
-                            //k1.draw();
+                            //kims[0].draw();
                         }
                         if (input.isKeyPressed(Input.KEY_V)) {
-                            k1.changeUpAttack();
+                            kims[0].changeUpAttack();
                             sound.play(1, 0.3f);
                             m = false;
                         }
 
                         if (input.isKeyPressed(Input.KEY_Y)) {
-                            k1.changeSideAttack();
+                            kims[0].changeSideAttack();
                             Server2.send("side special ", 1);
                             sound.play(1, 0.3f);
                             m = false;
                         }
                         if (input.isKeyPressed(Input.KEY_I)) {
-                            k1.changeUpSpecial();
+                            kims[0].changeUpSpecial();
                             m = false;
                         }
                         if (input.isKeyPressed(Input.KEY_U)) {
-                            k1.changeUlt();
+                            kims[0].changeUlt();
                             Server2.send("ult ", 1);
                             m = false;
                         }
                         if (input.isKeyPressed(controls[UP]) && !jumping) { //!jumping is so you can't jump mid jump
                             Server2.send("jump ", 1);
                             jumping = true;
-                            try {
-                                initY = k1.getY(); //sets the initial y of Kim (this is only temporary)
-                                k1.changeJump();
-                                jump2(gc, k1); //using the updated "jump2" method
-                            } catch (InterruptedException ex) {
-                            }
-                            m = false;
+                            /*
+                             * try { initY = kims[0].getY(); //sets the initial
+                             * y of Kim (this is only temporary)
+                             * kims[0].changeJump(); jump2(gc, kims[0]); //using
+                             * the updated "jump2" method } catch
+                             * (InterruptedException ex) { } m = false;
+                             */
                         }
-                        if (k1.getX() < -24 || k1.getX() > 714 || k1.getY() > 400) { //if off platform fall
+                        if ((kims[0].getX() < -24 || kims[0].getX() > 714) && !jumping) { //if off platform fall
                             try {
                                 fall(gc);
                             } catch (InterruptedException ex) {
                             }
                         }
                         if (input.isKeyDown(controls[LEFT])) {
-                            k1.walk(-2);
+                            //kims[0].walk(-14);
                             Server2.send("left ", 1);
                             m = true;
                         } else if (input.isKeyDown(controls[RIGHT])) {
-                            k1.walk(2);
+                            //kims[0].walk(14);
                             Server2.send("right ", 1);
                             m = true;
                         } else if (m) {
                             System.out.println(m);
-                            k1.idle();
+                            kims[0].idle();
                         }
                         if (!(input.isKeyDown(controls[LEFT]) || input.isKeyDown(controls[RIGHT]) || input.isKeyDown(Input.KEY_T) || input.isKeyDown(Input.KEY_V) || input.isKeyDown(Input.KEY_Y) || input.isKeyDown(Input.KEY_S) || input.isKeyDown(Input.KEY_U) || input.isKeyDown(controls[UP]))) {
                             Server2.send("stop", 1);
-                            k1.idle();
+                            //kims[0].idle();
                         }
                     }
-                    if (k1.getY() > 660 || k1.getX() < -160 || k1.getX() > 950) { //if out of arena play a sound and reset position //TO-DO subtract lives
+                    if (kims[0].getY() > 660 || kims[0].getX() < -160 || kims[0].getX() > 950) { //if out of arena play a sound and reset position //TO-DO subtract lives
                         if (!dead) {
                             death.play();
-                            if (k1.getY() > 660) {
-                                k1.ded(0);
-                            } else if (k1.getX() < -160) {
-                                k1.ded(1);
-                            } else if (k1.getX() > 950) {
-                                k1.ded(3);
+                            if (kims[0].getY() > 660) {
+                                kims[0].ded(0);
+                            } else if (kims[0].getX() < -160) {
+                                kims[0].ded(1);
+                            } else if (kims[0].getX() > 950) {
+                                kims[0].ded(3);
                             }
                         }
-                        dead = true && !k1.anim.isStopped();
+                        dead = true && !kims[0].anim.isStopped();
                         if (!dead) {
-                            k1.setX(60);
-                            k1.setY(345);
+                            kims[0].setX(60);
+                            kims[0].setY(345);
                             if (CorS) {
                                 Client.numLives--;
                                 try {
@@ -703,15 +733,17 @@ public class Smash extends BasicGameState {
             } catch (IOException e) {
             }
         }
+        Client.recievedData = "";
+        Server2.recievedData = "";
     }
 
     /*
      * public void jump(GameContainer gc) throws InterruptedException { final
      * Input input = gc.getInput(); Thread a = new Thread(new Runnable() {
      * @Override public void run() { int i = 0; while (i < 35 &&
-     * input.isKeyDown(controls[UP])) { k1.setY(k1.getY() - 3); try {
+     * input.isKeyDown(controls[UP])) { kims[0].setY(kims[0].getY() - 3); try {
      * Thread.sleep(10); } catch (InterruptedException ex) { } i++; } while (i >
-     * -1) { k1.setY(k1.getY() + 3); try { Thread.sleep(10); } catch
+     * -1) { kims[0].setY(kims[0].getY() + 3); try { Thread.sleep(10); } catch
      * (InterruptedException ex) { } i--; } i = 0; } }); a.start(); }
      */
     public void jump2(GameContainer gc, final KimBoi k) throws InterruptedException {
@@ -721,8 +753,12 @@ public class Smash extends BasicGameState {
 
             @Override
             public void run() {
-                int scale = 7;
+                int scale = 10;
                 while (k.getY() > initY - 180 && input.isKeyDown(controls[UP])) {
+                    if (onStage(k) && k.getY() < 150) {
+                        //onstage is a boolean method
+                        break;
+                    }
                     k.setY(k.getY() - (3 + scale));//going up
                     scale = Math.max(0, scale - 1);
                     try {
@@ -732,6 +768,10 @@ public class Smash extends BasicGameState {
                 }
                 scale = 0;
                 while (k.getY() < initY - 5) {
+                    if (onStage(k) && kims[0].getY() > 345) {
+                        k.setY(345);
+                        break;
+                    }
                     k.setY(k.getY() + (3 + scale));//going down
                     scale = Math.min(5, scale + 1);
                     try {
@@ -739,7 +779,9 @@ public class Smash extends BasicGameState {
                     } catch (InterruptedException ex) {
                     }
                 }
-                k.setY(initY);
+                if (k.getY() != 345) {
+                    k.setY(initY);
+                }
                 jumping = false;
             }
         });
@@ -754,7 +796,7 @@ public class Smash extends BasicGameState {
                 //temp++;//BLOCK START
                 //if (temp % 2 == 0) {
                 //if (!dead) {
-                k1.setY(k1.getY() + 1);//this block "slows" down the falling of Kim
+                kims[0].setY(kims[0].getY() + 4);//this block "slows" down the falling of Kim
                 //}                //    temp = 0;
                 //}//BLOCK END
                 try {
@@ -776,13 +818,15 @@ public class Smash extends BasicGameState {
         if (CorS) {
             first += 90;
         }
-        k1 = new KimBoi(first, 345, idle);
+        kims = new KimBoi[4];
+        kims[0] = new KimBoi(first, 345, idle);
         m = true;
-        k1.start();
+        kims[0].start();
+        kims[0].idle();
         numPlayers = Math.max(Client.getNumPlayers(), Server2.getNumPlayers());
-        kims = new KimBoi[numPlayers - 1];
+
         int second = 150;
-        for (int i = 0; i < numPlayers - 1; i++) {
+        for (int i = 1; i < numPlayers; i++) {
             if (CorS) {
                 second -= 90;
             }
@@ -792,5 +836,9 @@ public class Smash extends BasicGameState {
         }
         System.out.println("CorS: " + CorS);
         gen = false;
+    }
+
+    public boolean onStage(KimBoi k) {
+        return (k.getX() > -24 || k.getX() < 714);
     }
 }

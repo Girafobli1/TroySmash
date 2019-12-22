@@ -12,10 +12,6 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.gui.*;
 
-/**
- *
- * server
- */
 public class SelectionMenu extends BasicGameState {
     private MouseOverArea backMouse;
     private MouseOverArea noMouse;

@@ -79,9 +79,9 @@ public class Server2 {
 
     public static synchronized void send(String message, int fromId) {
         for (Conn i : connectionList) {
-            if (i.getConnectionId() != fromId) {
+            //if (i.getConnectionId() != fromId) 
                 i.send(message, fromId);                                        //sends to all using conn's send method
-            }
+            
         }
     }
 
@@ -200,7 +200,6 @@ public class Server2 {
         if (is.available() > 0) {
             recievedData = is.readUTF();
             System.out.println("Server data: " + recievedData);
-
         }
     }
 

@@ -11,8 +11,8 @@ public class KimBoi extends AbstractChar {
 
     public Animation anim;
     //dimension of the spriteSheet
-    private final int dimX;
-    private final int dimY;
+    private final int dimX = 300;
+    private final int dimY = 200;
     SpriteSheet[] s;
     //all spritesheet references
     private SpriteSheet attack1;
@@ -51,12 +51,26 @@ public class KimBoi extends AbstractChar {
     private RectHB kimHB;
 
     public KimBoi(float x1, float y1, Image i) throws SlickException {
-        super(x1, y1, i, new SpriteSheet("res/resized/Attack.png", 300, 200), new SpriteSheet("res/resized/SideAttack.png", 300, 200), new SpriteSheet("res/resized/UpAttack.png", 300, 200), new SpriteSheet("res/resized/UpSpecial.png", 300, 200), new SpriteSheet("res/resized/Ult.png", 300, 200), new SpriteSheet("res/resized/Jump.png", 300, 200), new SpriteSheet("res/resized/Running.png", 300, 200),  new SpriteSheet("res/resized/Idle.png", 300, 200), new SpriteSheet("res/resized/Knockback.png", 300, 200));
+        super(x1, y1, i);
 
-        s = super.s;
+        //create all SpriteSheets
+        attack1 = new SpriteSheet("res/resized/Attack.png", dimX, dimY);
+        sideAttack1 = new SpriteSheet("res/resized/SideAttack.png", dimX, dimY);
+        upAttack1 = new SpriteSheet("res/resized/UpAttack.png", dimX, dimY);
+        upSpecial1 = new SpriteSheet("res/resized/UpSpecial.png", dimX, dimY);
+        ult1 = new SpriteSheet("res/resized/Ult.png", dimX, dimY);
+        jump1 = new SpriteSheet("res/resized/Jump.png", dimX, dimY);//c
+        running1 = new SpriteSheet("res/resized/Running.png", dimX, dimY);//c
+        idle1 = new SpriteSheet("res/resized/Idle.png", dimX, dimY);//c
+        ded = new SpriteSheet("res/KO1.png", 800, 800);
+        ded2 = new SpriteSheet("res/KO2.png", 800, 800);
+        ded3 = new SpriteSheet("res/KO3.png", 800, 800);
+        ded4 = new SpriteSheet("res/KO4.png", 800, 800);
+        knock = new SpriteSheet("res/resized/Knockback.png", dimX, dimY);
+
+        s = new SpriteSheet[]{attack1, sideAttack1, upAttack1, upSpecial1, ult1, jump1, running1, idle1, ded, ded2, ded3, ded4};
+
         kimHB = new RectHB((int) x + 120, (int) y + 75, 50, 100);
-        dimX = 300;
-        dimY = 200;
     }
 
     //gets coordinates of kim
